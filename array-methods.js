@@ -68,7 +68,14 @@ var sumOfInterests = dataset.bankBalances
     round this number to the nearest dollar before moving on.
   )
  */
-var stateSums = null;
+var stateSums = dataset.bankBalances.reduce(function(p, c) {
+  if (p.hasOwnProperty(c.state)) {
+    p[c.state] += Math.round(parseInt(c.amount));
+  } else {
+    p[c.state] = parseInt(c.amount);
+  }
+  return p;
+}, {});
 
 /*
   for all states *NOT* in the following states:
@@ -87,20 +94,65 @@ var stateSums = null;
     round this number to the nearest dollar before moving on.
   )
  */
-var sumOfHighInterests = null;
+
+var sumOfHighInterests = Object.entries(stateSums)
+  .filter(function(e) {
+    if (
+      e[0] !== "WI" &&
+      e[0] !== "IL" &&
+      e[0] !== "WY" &&
+      e[0] !== "OH" &&
+      e[0] !== "GA" &&
+      e[0] !== "DE"
+    ) {
+      return e;
+    }
+  })
+  .map(function(e) {
+    return Math.round(e[1] * 0.189);
+  })
+  .filter(function(e) {
+    if (e > 50000) {
+      return e;
+    }
+  })
+  .reduce(function(p, c) {
+    return p + c;
+  }, 0);
 
 /*
   set `lowerSumStates` to be an array of two letter state
   abbreviations of each state where the sum of amounts
   in the state is less than 1,000,000
  */
-var lowerSumStates = null;
+var lowerSumStates = Object.entries(stateSums)
+  .filter(function(e) {
+    if (e[1] < 1000000) {
+      return e;
+    }
+  })
+  .reduce(function(p, c) {
+    p.push(c[0]);
+    return p;
+  }, []);
 
 /*
   aggregate the sum of each state into one hash table
   `higherStateSums` should be the sum of all states with totals greater than 1,000,000
  */
-var higherStateSums = null;
+var higherStateSums = Object.entries(stateSums)
+  .filter(function(e) {
+    if (e[1] > 1000000) {
+      return e;
+    }
+  })
+  .reduce(function(p, c) {
+    p.push(c[1]);
+    return p;
+  }, [])
+  .reduce(function(p, c) {
+    return p + c;
+  });
 
 /*
   from each of the following states:
@@ -117,7 +169,26 @@ var higherStateSums = null;
   if true set `areStatesInHigherStateSum` to `true`
   otherwise set it to `false`
  */
-var areStatesInHigherStateSum = null;
+
+let isTrue = true;
+let isFalse = false;
+
+var areStatesInHigherStateSum = Object.entries(stateSums)
+  .filter(function(e) {
+    if (
+      e[0] === "WI" ||
+      e[0] === "IL" ||
+      e[0] === "WY" ||
+      e[0] === "OH" ||
+      e[0] === "GA" ||
+      e[0] === "DE"
+    ) {
+      return e;
+    }
+  })
+  .every(function(e) {
+    return e[1] > 2550000;
+  });
 
 /*
   Stretch Goal && Final Boss
@@ -133,7 +204,22 @@ var areStatesInHigherStateSum = null;
   have a sum of account values greater than 2,550,000
   otherwise set it to be `false`
  */
-var anyStatesInHigherStateSum = null;
+var anyStatesInHigherStateSum = Object.entries(stateSums)
+  .filter(function(e) {
+    if (
+      e[0] === "WI" ||
+      e[0] === "IL" ||
+      e[0] === "WY" ||
+      e[0] === "OH" ||
+      e[0] === "GA" ||
+      e[0] === "DE"
+    ) {
+      return e;
+    }
+  })
+  .some(function(e) {
+    return e[1] > 2550000;
+  });
 
 module.exports = {
   hundredThousandairs: hundredThousandairs,
