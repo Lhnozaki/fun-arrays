@@ -1,5 +1,7 @@
 var dataset = require("./dataset.json");
 
+var states = ["WI", "IL", "WY", "OH", "GA", "DE"];
+
 /*
   create an array with accounts from bankBalances that are
   greater than 100000
@@ -7,9 +9,7 @@ var dataset = require("./dataset.json");
 */
 
 var hundredThousandairs = dataset.bankBalances.filter(function(e) {
-  if (e.amount > 100000) {
-    return e;
-  }
+  return e.amount > 100000;
 });
 
 // set sumOfBankBalances to be the sum of all value held at `amount` for each bank object
@@ -34,16 +34,7 @@ var sumOfBankBalances = dataset.bankBalances
  */
 var sumOfInterests = dataset.bankBalances
   .filter(function(e) {
-    if (
-      e.state === "WI" ||
-      e.state === "IL" ||
-      e.state === "WY" ||
-      e.state === "OH" ||
-      e.state === "GA" ||
-      e.state === "DE"
-    ) {
-      return e;
-    }
+    return states.includes(e.state);
   })
   .map(function(e) {
     return e.amount * 0.189;
@@ -97,24 +88,13 @@ var stateSums = dataset.bankBalances.reduce(function(p, c) {
 
 var sumOfHighInterests = Object.entries(stateSums)
   .filter(function(e) {
-    if (
-      e[0] !== "WI" &&
-      e[0] !== "IL" &&
-      e[0] !== "WY" &&
-      e[0] !== "OH" &&
-      e[0] !== "GA" &&
-      e[0] !== "DE"
-    ) {
-      return e;
-    }
+    return !states.includes(e[0]);
   })
   .map(function(e) {
     return Math.round(e[1] * 0.189);
   })
   .filter(function(e) {
-    if (e > 50000) {
-      return e;
-    }
+    return e > 50000;
   })
   .reduce(function(p, c) {
     return p + c;
@@ -127,9 +107,7 @@ var sumOfHighInterests = Object.entries(stateSums)
  */
 var lowerSumStates = Object.entries(stateSums)
   .filter(function(e) {
-    if (e[1] < 1000000) {
-      return e;
-    }
+    return e[1] < 1000000;
   })
   .reduce(function(p, c) {
     p.push(c[0]);
@@ -142,14 +120,11 @@ var lowerSumStates = Object.entries(stateSums)
  */
 var higherStateSums = Object.entries(stateSums)
   .filter(function(e) {
-    if (e[1] > 1000000) {
-      return e;
-    }
+    return e[1] > 1000000;
   })
-  .reduce(function(p, c) {
-    p.push(c[1]);
-    return p;
-  }, [])
+  .map(function(e) {
+    return e[1];
+  })
   .reduce(function(p, c) {
     return p + c;
   });
@@ -170,21 +145,9 @@ var higherStateSums = Object.entries(stateSums)
   otherwise set it to `false`
  */
 
-let isTrue = true;
-let isFalse = false;
-
 var areStatesInHigherStateSum = Object.entries(stateSums)
   .filter(function(e) {
-    if (
-      e[0] === "WI" ||
-      e[0] === "IL" ||
-      e[0] === "WY" ||
-      e[0] === "OH" ||
-      e[0] === "GA" ||
-      e[0] === "DE"
-    ) {
-      return e;
-    }
+    return states.includes(e[0]);
   })
   .every(function(e) {
     return e[1] > 2550000;
@@ -206,16 +169,7 @@ var areStatesInHigherStateSum = Object.entries(stateSums)
  */
 var anyStatesInHigherStateSum = Object.entries(stateSums)
   .filter(function(e) {
-    if (
-      e[0] === "WI" ||
-      e[0] === "IL" ||
-      e[0] === "WY" ||
-      e[0] === "OH" ||
-      e[0] === "GA" ||
-      e[0] === "DE"
-    ) {
-      return e;
-    }
+    return states.includes(e[0]);
   })
   .some(function(e) {
     return e[1] > 2550000;
